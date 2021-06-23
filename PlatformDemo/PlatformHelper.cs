@@ -23,6 +23,10 @@ namespace PlatformDemo
         private static DateTime Now;
         private static Dictionary<string, Config> ConfigDict = new Dictionary<string, Config>();
         private static Dictionary<string, Feature> FeatureDict = new Dictionary<string, Feature>();
+        private static readonly string[] DisabledConfigName =
+        {
+
+        };
         static PlatformHelper()
         {
             Asmb = Assembly.Load("PlatformDemo");
@@ -88,12 +92,22 @@ namespace PlatformDemo
             XmlDocument xDoc = new XmlDocument();
             xDoc.Load(rootXmlPath);
 
+            List<string> enabledFeatureList = new List<string>();
             foreach(var item in ConfigDict)
             {
-                if (item.Key != "localcommon")                
-                    MergeNodes(item.Key, item.Value, xDoc);                
+                if (item.Key == "localcommon")
+                    continue;
+                if (DisabledConfigName.Contains(item.Key))
+                    continue;
+                Sanity.Requires(item.Key.StartsWith("config"), $"Config name mismatch: {item.Key}");
+                enabledFeatureList.Add(item.Value.GetType().Name.Substring("config".Length));
+                MergeNodes(item.Key, item.Value, xDoc);
             }
             MergeNodes("localcommon", new LocalCommon(), xDoc);
+
+            string featureNames = string.Join("\r\n\t ", enabledFeatureList);
+            XmlComment comment = xDoc.CreateComment(featureNames);
+            xDoc["Root"].InsertBefore(comment, xDoc["Root"].FirstChild);
 
             xDoc.Save("Config.xml");
         }

@@ -8,7 +8,7 @@ using System.IO;
 
 namespace Common
 {
-    public static class IO
+    public static class IOHelper
     {
         public static IEnumerable<string> ReadEmbed(string path, string asmbName = "Common")
         {

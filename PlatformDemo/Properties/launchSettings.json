@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PlatformDemo": {
+      "commandName": "Project",
+      "commandLineArgs": "magictest"
+    }
+  }
+}

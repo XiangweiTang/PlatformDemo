@@ -86,7 +86,7 @@ namespace PlatformDemo
             WorkFolder = Path.Combine(TMP, $"{Now.ToStringPathMiddle()}_InitXmlConfig");
             Directory.CreateDirectory(WorkFolder);
             string rootXmlPath = Path.Combine(WorkFolder, "Root.xml");
-            var list = IO.ReadEmbed("PlatformDemo.Internal.Script.RootXml.xml", "PlatformDemo");
+            var list = IOHelper.ReadEmbed("PlatformDemo.Internal.Script.RootXml.xml", "PlatformDemo");
             File.WriteAllLines(rootXmlPath, list);
 
             XmlDocument xDoc = new XmlDocument();
@@ -191,7 +191,12 @@ namespace PlatformDemo
                         break;
                 } while (true);
             }
-            new Test(Arg, Cfg, LCommon);
+            new Test()
+            {
+                Arg = Arg,
+                Cfg = Cfg,
+                LCommon = LCommon,
+            }.Run();
         }
 
         private static void RunFeature()

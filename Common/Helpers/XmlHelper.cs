@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace Common
 {
-    public static class CommonXml
+    public static class XmlHelper
     {
         public static string GetValue(this XmlNode node, string xPath, string attribute = "")
         {

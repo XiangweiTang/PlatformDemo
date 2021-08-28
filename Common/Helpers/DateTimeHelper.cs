@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common
 {
-    public static class DT
+    public static class DateTimeHelper
     {
         public static string ToStringLog(this DateTime dt)
         {

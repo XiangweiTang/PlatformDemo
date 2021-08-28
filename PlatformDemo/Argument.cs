@@ -16,7 +16,7 @@ namespace PlatformDemo
         public string XmlConfigFilePath { get; set; } = "Config.xml";
         public Argument(string[] args)
         {
-
+            ArgType = ArgumentType.Test;
         }
     }
     [Flags]

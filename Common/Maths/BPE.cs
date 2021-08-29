@@ -3,21 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace Common.Maths
 {
     public static class BPE
     {
-        public static IEnumerable<(string, string)> RawBPE(BPEWord[] vocab, int n)
+        const string END = "<\\w>";
+        public static IEnumerable<(string, string)> RawBPE(BPEWord[] vocab, int n, string outputFolder, int step)
         {
             (string, string) prev = ("", "");
-            for (int round = 0; round <= n; round++)
+            for (int round = 1; round <= n+1; round++)
             {
                 bool setFlag = false;
                 Dictionary<(string, string), int> freqDict = new Dictionary<(string, string), int>();
                 for (int i = 0; i < vocab.Length; i++)
                 {
                     var word = vocab[i];
+                    if (round == 1)
+                    {
+                        word.SubWords.Add(END);
+                    }
                     for (int j = 0; j < word.SubWords.Count - 1; j++)
                     {
                         var biGram = (word.SubWords[j], word.SubWords[j + 1]);
@@ -41,10 +48,17 @@ namespace Common.Maths
                         }
                     }
                     vocab[i] = word;
+
                 }
                 if (freqDict.Count == 0)
                     break;
                 prev = freqDict.Aggregate((x, y) => x.Value >= y.Value ? x : y).Key;
+                if (round % step == 0)
+                {
+                    Console.WriteLine($"Output round {round}...");
+                    string newWPath = Path.Combine(outputFolder, $"{round}.words.txt");
+                    File.WriteAllLines(newWPath, vocab.Select(x => string.Join(" ", x.SubWords)));
+                }
             }
         }
         public static BPEWord GenerateBPE((string s,int freq) v)
@@ -56,16 +70,36 @@ namespace Common.Maths
             return new BPEWord
             {
                 Word = s,
-                SubWords = s.Select(x => $"{x}").Append($"{'\0'}").ToList(),
+                SubWords = s.Select(x => $"{x}").ToList(),
                 Frequency = freq
             };
+        }
+        public static void Serialize(this BPEWord[] bpes, string filePath)
+        {
+            XmlSerializer xs = new XmlSerializer(typeof(BPEWord[]));
+            using(StreamWriter sw=new StreamWriter(filePath))
+            {
+                xs.Serialize(sw, bpes);
+            }
+        }
+
+        public static BPEWord[] Deserialize(string filePath)
+        {
+            XmlSerializer xs = new XmlSerializer(typeof(BPEWord[]));
+            using(StreamReader sr=new StreamReader(filePath))
+            {
+                return (BPEWord[])xs.Deserialize(sr);
+            }
         }
     }
 
     public struct BPEWord
     {
+        [XmlAttribute]
         public string Word { get; set; }
+        [XmlAttribute]
         public List<string> SubWords { get; set; }
+        [XmlAttribute]
         public int Frequency { get; set; }
     }
 }

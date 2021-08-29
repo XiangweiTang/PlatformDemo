@@ -30,8 +30,8 @@ namespace PlatformDemo
             //var input = seq.Select(x => BPE.GenerateBPE(x)).ToArray();
             //BPE.Serialize(input, bpeStoragePath);            
             var array = BPE.Deserialize(bpeStoragePath);
-            var vocabs = BPE.RawBPE(array, 1000, bpeFolderPath, 100)
-                .Select(x => $"{x.Item1}{x.Item2}");
+            var vocabs = BPE.RawBPE(array, 10000, bpeFolderPath, 100)
+                .Select(x => $"{x.Item1}{x.Item2}\t{x.Item1} {x.Item2}");
             File.WriteAllLines(vocabPath, vocabs);
         }
 

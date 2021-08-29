@@ -55,9 +55,12 @@ namespace Common.Maths
                 prev = freqDict.Aggregate((x, y) => x.Value >= y.Value ? x : y).Key;
                 if (round % step == 0)
                 {
-                    Console.WriteLine($"Output round {round}...");
+                    Logger.WriteLine($"Output round {round}...");
                     string newWPath = Path.Combine(outputFolder, $"{round}.words.txt");
                     File.WriteAllLines(newWPath, vocab.Select(x => string.Join(" ", x.SubWords)));
+                    var totalNewWords = vocab.SelectMany(x => x.SubWords).Distinct();
+                    string newBpepath = Path.Combine(outputFolder, $"{round}.newWords.txt");
+                    File.WriteAllLines(newBpepath, totalNewWords);
                 }
             }
         }

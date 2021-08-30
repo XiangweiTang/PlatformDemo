@@ -52,7 +52,7 @@ namespace Common.Maths
                 }
                 if (freqDict.Count == 0)
                     break;
-                prev = freqDict.Aggregate((x, y) => x.Value >= y.Value ? x : y).Key;
+                prev = ArgM.ArgMax(freqDict, x => x.Value).Key;
                 if (round % step == 0)
                 {
                     Logger.WriteLine($"Output round {round}...");
